@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading – Manatees (A2 Level)</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef6ff;--surface:#fff;--border:#c8dff5;
+  --text:#1a2a3a;--muted:#6a85a0;--accent:#1565c0;--accent2:#e65100;
+  --red:#c62828;--red-light:#ffebee;--green:#2e7d32;--green-light:#e8f5e9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+header{background:var(--accent);color:#fff;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.18);}
+header h1{font-size:1rem;font-weight:800;letter-spacing:0.01em;}
+#timer-display{font-size:1.1rem;font-weight:800;background:rgba(255,255,255,0.18);padding:0.25rem 0.9rem;border-radius:20px;letter-spacing:0.08em;}
+#timer-display.warning{background:rgba(220,50,30,0.55);}
+.hdr-btns{display:flex;gap:0.5rem;}
+.btn-sm{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.35);color:#fff;padding:0.3rem 0.85rem;border-radius:20px;font-size:0.8rem;font-weight:700;cursor:pointer;}
+.btn-sm:hover{background:rgba(255,255,255,0.3);}
+.btn-sub{background:var(--accent2);border:none;color:#fff;padding:0.32rem 1rem;border-radius:20px;font-size:0.82rem;font-weight:800;cursor:pointer;}
+.btn-sub:hover{background:#bf360c;}
+
+#progress-bar{height:4px;background:rgba(21,101,192,0.15);}
+#progress-fill{height:100%;background:var(--accent2);width:0%;transition:width 0.4s;}
+
+main{max-width:1200px;margin:0 auto;padding:1.2rem 1rem;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+@media(max-width:800px){main{grid-template-columns:1fr;}}
+
+.panel{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;overflow-y:auto;max-height:calc(100vh - 56px - 4px - 2.4rem);box-shadow:0 2px 12px rgba(21,101,192,0.06);}
+
+/* PASSAGE */
+.passage-title{font-size:1.4rem;font-weight:800;color:var(--accent);margin-bottom:0.2rem;}
+.passage-level{display:inline-block;background:var(--accent2);color:#fff;font-size:0.7rem;font-weight:800;padding:0.15rem 0.6rem;border-radius:10px;margin-bottom:0.9rem;letter-spacing:0.06em;}
+.passage-text p{font-family:'Lora',serif;font-size:1rem;line-height:1.9;margin-bottom:1rem;color:var(--text);user-select:text;}
+.word-tip{border-bottom:2px dashed #90caf9;cursor:help;position:relative;}
+.word-tip:hover::after{content:attr(data-tip);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#1565c0;color:#fff;padding:0.3rem 0.6rem;border-radius:6px;font-size:0.75rem;white-space:nowrap;font-family:'Nunito',sans-serif;z-index:100;pointer-events:none;}
+
+/* QUESTIONS */
+.q-section-label{font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin:1.4rem 0 0.4rem;display:flex;align-items:center;gap:0.5rem;}
+.q-section-label::after{content:'';flex:1;height:1.5px;background:var(--border);}
+.q-section-label:first-child{margin-top:0;}
+
+.instruction{font-size:0.85rem;color:var(--muted);margin-bottom:0.9rem;line-height:1.6;background:#e3f2fd;border-left:4px solid var(--accent);padding:0.5rem 0.8rem;border-radius:0 8px 8px 0;}
+
+/* Notes block */
+.notes-card{background:#f0f7ff;border:1.5px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem;}
+.notes-section{font-weight:800;font-size:0.88rem;color:var(--accent);margin:0.7rem 0 0.35rem;display:flex;align-items:center;gap:0.4rem;}
+.notes-section::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent2);}
+.notes-row{font-family:'Lora',serif;font-size:0.9rem;line-height:2.2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 0.25rem;margin-bottom:0.1rem;padding-left:1rem;}
+.q-tag{display:inline-flex;align-items:center;justify-content:center;background:var(--accent2);color:#fff;font-family:'Nunito',sans-serif;font-size:0.62rem;font-weight:800;padding:0.08rem 0.35rem;border-radius:4px;letter-spacing:0.04em;margin:0 0.1rem;}
+.fill-in{display:inline-block;width:115px;border:none;border-bottom:2.5px solid #90caf9;background:transparent;font-family:'Nunito',sans-serif;font-size:0.9rem;color:var(--text);padding:0.1rem 0.35rem;outline:none;transition:border-color 0.2s,background 0.2s;border-radius:3px 3px 0 0;vertical-align:baseline;}
+.fill-in:focus{border-color:var(--accent);background:#e3f2fd;}
+
+/* TFN */
+.q-card{margin-bottom:0.8rem;padding:0.85rem 1rem;border:1.5px solid var(--border);border-radius:10px;background:#f8fbff;transition:border-color 0.2s;}
+.q-card:focus-within{border-color:var(--accent);}
+.q-num{font-size:0.68rem;font-weight:800;color:var(--accent2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;}
+.q-text{font-size:0.9rem;line-height:1.6;margin-bottom:0.5rem;font-family:'Lora',serif;}
+.opt-row{display:flex;gap:0.4rem;flex-wrap:wrap;}
+.opt{border:2px solid var(--border);background:#fff;color:var(--text);padding:0.3rem 0.9rem;border-radius:20px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:'Nunito',sans-serif;}
+.opt:hover{border-color:var(--accent);color:var(--accent);}
+.opt.sel{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+.btn-main{background:var(--accent2);color:#fff;padding:0.65rem 2rem;font-size:0.95rem;border-radius:25px;border:none;cursor:pointer;font-weight:800;display:block;margin:2rem auto 0;letter-spacing:0.02em;}
+.btn-main:hover{background:#bf360c;}
+
+/* Highlight */
+#hl-toolbar{display:none;position:fixed;z-index:9999;background:#1a1a2e;border-radius:10px;padding:0.4rem 0.6rem;gap:0.35rem;align-items:center;box-shadow:0 8px 28px rgba(0,0,0,0.4);}
+#hl-toolbar.visible{display:flex;}
+.hl-cb{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.2);cursor:pointer;transition:transform 0.12s,border-color 0.12s;}
+.hl-cb:hover{transform:scale(1.3);border-color:#fff;}
+.hl-cb.active{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,0.35);}
+.hl-sep{width:1px;height:16px;background:rgba(255,255,255,0.2);}
+.hl-erase{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;cursor:pointer;font-size:0.74rem;padding:0.2rem 0.55rem;border-radius:5px;white-space:nowrap;font-family:'Nunito',sans-serif;font-weight:700;}
+.hl-erase:hover{background:rgba(220,50,30,0.4);}
+mark.hl{background:none;border-radius:2px;padding:0 1px;cursor:pointer;}
+mark.hl-y{background:#ffe066;}
+mark.hl-g{background:#a8f0b8;}
+mark.hl-b{background:#a8d8f0;}
+mark.hl-p{background:#f0a8d0;}
+
+/* Results */
+#result-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:center;justify-content:center;}
+#result-panel.show{display:flex;}
+.result-box{background:#fff;border-radius:16px;padding:2rem 1.8rem;max-width:560px;width:93%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3);}
+.result-box h2{color:var(--accent);font-size:1.4rem;margin-bottom:0.2rem;}
+.score-big{font-size:3rem;font-weight:800;color:var(--accent);line-height:1;}
+.score-sub{color:var(--muted);font-size:0.9rem;margin-bottom:1.2rem;}
+.r-label{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:1rem 0 0.3rem;}
+.r-row{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.85rem;}
+.r-row:last-child{border-bottom:none;}
+.rq{min-width:26px;font-weight:800;color:var(--muted);}
+.r-you{min-width:110px;}
+.r-ans{color:var(--green);font-weight:700;}
+.badge{padding:0.12rem 0.45rem;border-radius:5px;font-size:0.72rem;font-weight:800;}
+.badge.ok{background:var(--green-light);color:var(--green);}
+.badge.no{background:var(--red-light);color:var(--red);}
+.close-btn{margin-top:1.4rem;background:var(--accent);color:#fff;border:none;padding:0.55rem 1.5rem;border-radius:25px;cursor:pointer;font-weight:800;font-size:0.9rem;display:block;margin-left:auto;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐋 Reading: Manatees</h1>
+  <div id="timer-display">20:00</div>
+  <div class="hdr-btns">
+    <button class="btn-sm" onclick="location.reload()">↺ Restart</button>
+    <button class="btn-sub" onclick="submitTest()">Submit ✓</button>
+  </div>
+</header>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<main>
+  <!-- ══════ PASSAGE ══════ -->
+  <div class="panel" id="passage-panel">
+    <div class="passage-title">Manatees</div>
+    <span class="passage-level">A2 · Elementary</span>
+    <div class="passage-text">
+
+      <p><strong>What are manatees?</strong><br>
+      Manatees are large water animals. People sometimes call them "sea cows." They are
+      <span class="word-tip" data-tip="living in water">aquatic</span> 
+      mammals, like dolphins and whales. A close relative of the manatee is the dugong. Dugongs and manatees look very similar — they are the same size, colour and shape. Both animals have
+      <span class="word-tip" data-tip="flat limbs used for swimming">flippers</span>
+      . But the manatee has a round, flat tail. The dugong's tail looks more like a whale's tail. There are three types of manatee: the West Indian manatee, the African manatee, and the Amazonian manatee.</p>
+
+      <p><strong>How does a manatee move?</strong><br>
+      Most mammals have seven bones in their neck. Manatees only have six. Because of this, a manatee cannot turn its head left or right. To look sideways, it must turn its whole body. Manatees use their flippers to help them turn. They also have a tail to push themselves through the water. Manatees have some short hairs on their skin. These hairs help them feel movements in the water around them.</p>
+
+      <p><strong>What do manatees eat?</strong><br>
+      Manatees eat mostly plants that grow in the water, like
+      <span class="word-tip" data-tip="grass that grows in the sea">seagrasses</span>
+      . They spend about eight hours every day eating. Each day, they eat up to 15% of their body weight. African manatees also eat some fish and shellfish. West Indian and Amazonian manatees only eat plants. Manatees do not have front teeth. Instead, they use their
+      <span class="word-tip" data-tip="the soft parts around your mouth">lips</span>
+      like hands to pull plants from the bottom of the sea.</p>
+
+      <p><strong>How do manatees breathe?</strong><br>
+      Manatees live in water, but they must come to the surface to breathe air, just like all mammals. When they are awake, they come up for air every 2–4 minutes. When they sleep underwater, they come up every 15–20 minutes. Scientists think manatees can also use their breathing muscles to control whether they float up or sink down in the water.</p>
+
+      <p><strong>Where do manatees live?</strong><br>
+      The West Indian manatee is about 3.5 metres long and weighs around 500 kg. It lives in both fresh water and salt water — in rivers, lakes, and near the coast. The Florida manatee is one type of West Indian manatee. In winter, it stays in warm water because it cannot survive in cold water. The African manatee also grows to about 3.5 metres. It lives along the west coast of Africa and also goes into rivers in countries like Mali and Niger. The Amazonian manatee is smaller — about 2.5 metres long and 350 kg. It only lives in fresh water in South America.</p>
+
+      <p><strong>Are manatees in danger?</strong><br>
+      Yes. All three types of manatee are in danger of disappearing. People killed about 140,000 Amazonian manatees between 1935 and 1954 for their meat and skin. Today, African manatees are still caught in fishing nets and hunted, but hunting is now illegal in all countries where they live. West Indian manatees are also at risk. Boats are the biggest cause of death for Florida manatees. To help, some parts of Florida now have laws to make boats go more slowly in winter, so manatees have more time to get away.</p>
+
+    </div>
+  </div>
+
+  <!-- ══════ QUESTIONS ══════ -->
+  <div class="panel">
+
+    <div class="q-section-label">Questions 1–6 · Fill in the Notes</div>
+    <div class="instruction">Read the passage and write <strong>ONE WORD</strong> from the text for each answer.</div>
+
+    <div class="notes-card">
+      <div class="notes-section">Body</div>
+      <div class="notes-row">
+        Tail shape: round and flat, not like a
+        <span class="q-tag">Q1</span>
+        <input class="fill-in" data-q="1" type="text" placeholder="..." autocomplete="off"/>
+        's tail
+      </div>
+      <div class="notes-row">
+        Uses
+        <span class="q-tag">Q2</span>
+        <input class="fill-in" data-q="2" type="text" placeholder="..." autocomplete="off"/>
+        to turn its body sideways
+      </div>
+      <div class="notes-row">
+        Small
+        <span class="q-tag">Q3</span>
+        <input class="fill-in" data-q="3" type="text" placeholder="..." autocomplete="off"/>
+        on the skin help feel water movements
+      </div>
+
+      <div class="notes-section">Food</div>
+      <div class="notes-row">
+        Mainly eats water plants, especially
+        <span class="q-tag">Q4</span>
+        <input class="fill-in" data-q="4" type="text" placeholder="..." autocomplete="off"/>
+      </div>
+      <div class="notes-row">
+        Uses its
+        <span class="q-tag">Q5</span>
+        <input class="fill-in" data-q="5" type="text" placeholder="..." autocomplete="off"/>
+        to grab plants (no front teeth)
+      </div>
+
+      <div class="notes-section">Breathing</div>
+      <div class="notes-row">
+        Uses breathing muscles to control
+        <span class="q-tag">Q6</span>
+        <input class="fill-in" data-q="6" type="text" placeholder="..." autocomplete="off"/>
+        (floating up or sinking down)
+      </div>
+    </div>
+
+    <div class="q-section-label">Questions 7–13 · True / False / Not Given</div>
+    <div class="instruction">
+      Choose <strong>TRUE</strong> if the text agrees · <strong>FALSE</strong> if the text disagrees · <strong>NOT GIVEN</strong> if the text does not say
+    </div>
+
+    <div class="q-card"><div class="q-num">Q 7</div>
+      <div class="q-text">West Indian manatees can live in rivers, lakes and near the coast.</div>
+      <div class="opt-row" data-q="7"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 8</div>
+      <div class="q-text">The Florida manatee lives in warmer water than the Antillean manatee.</div>
+      <div class="opt-row" data-q="8"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 9</div>
+      <div class="q-text">The African manatee only lives in the sea, not in rivers.</div>
+      <div class="opt-row" data-q="9"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 10</div>
+      <div class="q-text">People found out about the large number of Amazonian manatees killed long after it happened.</div>
+      <div class="opt-row" data-q="10"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 11</div>
+      <div class="q-text">The number of West Indian manatees is expected to go down in the next 40 years.</div>
+      <div class="opt-row" data-q="11"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 12</div>
+      <div class="q-text">The danger to manatees from fishing nets got worse between 2009 and 2020.</div>
+      <div class="opt-row" data-q="12"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <div class="q-card"><div class="q-num">Q 13</div>
+      <div class="q-text">Some laws in Florida help protect manatees from being hit by boats.</div>
+      <div class="opt-row" data-q="13"><button class="opt" data-val="TRUE">TRUE</button><button class="opt" data-val="FALSE">FALSE</button><button class="opt" data-val="NOT GIVEN">NOT GIVEN</button></div></div>
+
+    <button class="btn-main" onclick="submitTest()">Check My Answers ✓</button>
+  </div>
+</main>
+
+<!-- Highlight toolbar -->
+<div id="hl-toolbar">
+  <button class="hl-cb active" data-c="hl-y" style="background:#ffe066" title="Yellow"></button>
+  <button class="hl-cb" data-c="hl-g" style="background:#a8f0b8" title="Green"></button>
+  <button class="hl-cb" data-c="hl-b" style="background:#a8d8f0" title="Blue"></button>
+  <button class="hl-cb" data-c="hl-p" style="background:#f0a8d0" title="Pink"></button>
+  <div class="hl-sep"></div>
+  <button class="hl-erase" id="hl-erase">✕ erase</button>
+</div>
+
+<!-- Results -->
+<div id="result-panel">
+  <div class="result-box">
+    <h2>🎉 Your Results</h2>
+    <div class="score-big" id="score-num">0/13</div>
+    <div class="score-sub" id="score-band"></div>
+    <div id="result-rows"></div>
+    <button class="close-btn" onclick="document.getElementById('result-panel').classList.remove('show')">Close ✕</button>
+  </div>
+</div>
+
+<script>
+const ANSWERS = {
+  1:'dugong', 2:'flippers', 3:'hairs', 4:'seagrasses', 5:'lips', 6:'buoyancy',
+  7:'TRUE', 8:'NOT GIVEN', 9:'FALSE', 10:'NOT GIVEN', 11:'TRUE', 12:'NOT GIVEN', 13:'TRUE'
+};
+const TOTAL = 13;
+const userAnswers = {};
+
+let timeLeft = 20*60;
+const timerEl = document.getElementById('timer-display');
+const timerInt = setInterval(()=>{
+  timeLeft--;
+  timerEl.textContent = String(Math.floor(timeLeft/60)).padStart(2,'0')+':'+String(timeLeft%60).padStart(2,'0');
+  if(timeLeft<=120) timerEl.classList.add('warning');
+  if(timeLeft<=0){clearInterval(timerInt);submitTest();}
+  updateProgress();
+},1000);
+
+function updateProgress(){
+  document.getElementById('progress-fill').style.width=(Object.keys(userAnswers).length/TOTAL*100)+'%';
+}
+
+document.querySelectorAll('.fill-in').forEach(inp=>{
+  inp.addEventListener('input',()=>{
+    if(inp.value.trim()) userAnswers[inp.dataset.q]=inp.value.trim();
+    else delete userAnswers[inp.dataset.q];
+    updateProgress();
+  });
+});
+
+document.querySelectorAll('.opt-row').forEach(g=>{
+  g.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      g.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      btn.classList.add('sel');
+      userAnswers[g.dataset.q]=btn.dataset.val;
+      updateProgress();
+    });
+  });
+});
+
+function submitTest(){
+  clearInterval(timerInt);
+  let correct=0, rows='';
+  rows+='<div class="r-label">Fill in the Notes · Q1–6</div>';
+  for(let q=1;q<=6;q++){
+    const ok=(userAnswers[q]||'').trim().toLowerCase()===ANSWERS[q].toLowerCase();
+    if(ok) correct++;
+    rows+=`<div class="r-row"><span class="rq">${q}</span><span class="r-you">${userAnswers[q]||'<em style="color:#aaa">—</em>'}</span><span class="r-ans">✓ ${ANSWERS[q]}</span><span class="badge ${ok?'ok':'no'}">${ok?'✓':'✗'}</span></div>`;
+  }
+  rows+='<div class="r-label">True / False / Not Given · Q7–13</div>';
+  for(let q=7;q<=13;q++){
+    const ok=(userAnswers[q]||'').trim().toLowerCase()===ANSWERS[q].toLowerCase();
+    if(ok) correct++;
+    rows+=`<div class="r-row"><span class="rq">${q}</span><span class="r-you">${userAnswers[q]||'<em style="color:#aaa">—</em>'}</span><span class="r-ans">✓ ${ANSWERS[q]}</span><span class="badge ${ok?'ok':'no'}">${ok?'✓':'✗'}</span></div>`;
+  }
+  const msg = correct>=11?'🌟 Excellent!':correct>=8?'👍 Good job!':correct>=5?'🙂 Keep practising!':'💪 Try again!';
+  document.getElementById('score-num').textContent=correct+'/'+TOTAL;
+  document.getElementById('score-band').textContent=msg+' ('+Math.round(correct/TOTAL*100)+'%)';
+  document.getElementById('result-rows').innerHTML=rows;
+  document.getElementById('result-panel').classList.add('show');
+}
+
+// Highlight
+const hlT=document.getElementById('hl-toolbar');
+const passP=document.getElementById('passage-panel');
+const HLC=['hl-y','hl-g','hl-b','hl-p'];
+let hlColor='hl-y',hlRange=null,hlMark=null;
+hlT.addEventListener('mousedown',e=>e.preventDefault());
+hlT.querySelectorAll('.hl-cb').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    hlT.querySelectorAll('.hl-cb').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); hlColor=btn.dataset.c;
+    if(hlMark){HLC.forEach(c=>hlMark.classList.remove(c));hlMark.classList.add(hlColor);hlMark=null;hideHL();}
+    else if(hlRange){applyHL(hlRange,hlColor);hlRange=null;hideHL();}
+  });
+});
+document.getElementById('hl-erase').addEventListener('click',e=>{
+  e.stopPropagation();
+  if(hlMark){const p=hlMark.parentNode;while(hlMark.firstChild)p.insertBefore(hlMark.firstChild,hlMark);p.removeChild(hlMark);p.normalize();hlMark=null;}
+  else if(hlRange){eraseHL(hlRange);hlRange=null;}
+  hideHL();
+});
+function posHL(x,y){hlT.classList.add('visible');const tw=hlT.offsetWidth||220;hlT.style.left=Math.max(8,Math.min(x-tw/2,window.innerWidth-tw-8))+'px';hlT.style.top=(y+window.scrollY-56)+'px';}
+function hideHL(){hlT.classList.remove('visible');hlRange=null;hlMark=null;window.getSelection()?.removeAllRanges();}
+function attachMark(mark){
+  mark.addEventListener('click',e=>{
+    e.stopPropagation();hlMark=mark;hlRange=null;
+    const cur=HLC.find(c=>mark.classList.contains(c));
+    hlT.querySelectorAll('.hl-cb').forEach(b=>b.classList.toggle('active',b.dataset.c===cur));
+    const r=mark.getBoundingClientRect();posHL(r.left+r.width/2,r.top);
+  });
+}
+document.addEventListener('mouseup',e=>{
+  if(hlT.contains(e.target)||e.target.tagName==='INPUT'||e.target.tagName==='BUTTON') return;
+  if(e.target.closest&&e.target.closest('.hl')) return;
+  setTimeout(()=>{
+    const sel=window.getSelection();
+    if(!sel||sel.isCollapsed||!sel.toString().trim()){hideHL();return;}
+    const range=sel.getRangeAt(0);
+    if(!passP.contains(range.commonAncestorContainer)){hideHL();return;}
+    hlMark=null;hlRange=range.cloneRange();
+    const rect=range.getBoundingClientRect();posHL(rect.left+rect.width/2,rect.top);
+  },10);
+});
+document.addEventListener('mousedown',e=>{
+  if(e.target.tagName==='INPUT'||hlT.contains(e.target)) return;
+  if(e.target.closest&&e.target.closest('.hl')) return;
+  if(!passP.contains(e.target)) hideHL();
+});
+function applyHL(range,cls){
+  try{const frag=range.extractContents();frag.querySelectorAll('.hl').forEach(m=>{while(m.firstChild)m.parentNode.insertBefore(m.firstChild,m);m.remove();});const mark=document.createElement('mark');mark.className='hl '+cls;mark.appendChild(frag);attachMark(mark);range.insertNode(mark);mark.parentNode.normalize();}catch(e){}
+  window.getSelection()?.removeAllRanges();
+}
+function eraseHL(range){
+  try{const frag=range.extractContents();frag.querySelectorAll('.hl').forEach(m=>{while(m.firstChild)(m.parentNode||frag).insertBefore(m.firstChild,m);m.remove();});range.insertNode(frag);}catch(e){}
+  window.getSelection()?.removeAllRanges();
+}
+</script>
+</body>
+</html>
